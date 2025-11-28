@@ -23,13 +23,14 @@ function findOptimalFontSize( textElement, applyFontSize ) {
 	const range = document.createRange();
 	range.selectNodeContents( textElement );
 
-	const parentElement = textElement.parentElement;
 	let referenceElement = textElement;
-	if ( parentElement ) {
-		if ( window?.getComputedStyle( parentElement )?.display === 'flex' ) {
+	const parentElement = textElement.parentElement;
+	if (
+		parentElement &&
+		window?.getComputedStyle( parentElement )?.display === 'flex'
+	) {
 			referenceElement = parentElement;
 		}
-	}
 
 	while ( minSize <= maxSize ) {
 		const midSize = Math.floor( ( minSize + maxSize ) / 2 );
