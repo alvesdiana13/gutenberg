@@ -1,10 +1,10 @@
-import path from 'node:path';
 import { mergeConfig, transformWithEsbuild } from 'vite';
 import react from '@vitejs/plugin-react';
+import type { StorybookConfig } from '@storybook/react-vite';
 
 const stories = [
-	process.env.NODE_ENV !== 'test' && './stories/**/*.story.@(jsx|tsx)',
-	process.env.NODE_ENV !== 'test' && './stories/**/*.mdx',
+	process.env.NODE_ENV !== 'test' ? './stories/**/*.story.@(jsx|tsx)' : '',
+	process.env.NODE_ENV !== 'test' ? './stories/**/*.mdx' : '',
 	'../packages/block-editor/src/**/stories/*.story.@(js|jsx|tsx|mdx)',
 	'../packages/components/src/**/stories/*.story.@(jsx|tsx)',
 	'../packages/components/src/**/stories/*.mdx',
@@ -18,7 +18,7 @@ const stories = [
 	'../packages/ui/src/**/stories/*.mdx',
 ].filter( Boolean );
 
-export default {
+const config: StorybookConfig = {
 	core: {
 		disableTelemetry: true,
 	},
@@ -32,12 +32,7 @@ export default {
 		'@storybook/addon-a11y',
 		'storybook-addon-source-link',
 		'storybook-addon-tag-badges',
-	],
-	managerEntries: [
-		path.join(
-			import.meta.dirname,
-			'./addons/design-system-theme/manager.ts'
-		),
+		import.meta.resolve( './addons/design-system-theme/preset.ts' ),
 	],
 	framework: '@storybook/react-vite',
 	docs: {},
@@ -62,8 +57,8 @@ export default {
 			savePropValueAsString: true,
 		},
 	},
-	viteFinal: async ( config ) => {
-		return mergeConfig( config, {
+	viteFinal: async ( _config ) => {
+		return mergeConfig( _config, {
 			plugins: [
 				react( {
 					jsxImportSource: '@emotion/react',
@@ -73,7 +68,7 @@ export default {
 				} ),
 				{
 					name: 'load-js-files-as-jsx',
-					async transform( code, id ) {
+					async transform( code: string, id: string ) {
 						if ( ! id.match( /.*\.js$/ ) ) {
 							return null;
 						}
@@ -101,3 +96,5 @@ export default {
 		} );
 	},
 };
+
+export default config;
