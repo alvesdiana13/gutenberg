@@ -81,7 +81,10 @@ import AccessibleDescription from './accessible-description';
 import AccessibleMenuDescription from './accessible-menu-description';
 import { unlock } from '../../lock-unlock';
 import { useToolsPanelDropdownMenuProps } from '../../utils/hooks';
-import { DEFAULT_BLOCK } from '../constants';
+import {
+	DEFAULT_BLOCK,
+	NAVIGATION_OVERLAY_TEMPLATE_PART_AREA,
+} from '../constants';
 
 /**
  * Component that renders the Add page button for the Navigation block.
@@ -487,7 +490,8 @@ function Navigation( {
 		'wp_template_part',
 		templatePartId
 	);
-	const isWithinOverlayTemplatePart = templatePart?.area === 'overlay';
+	const isWithinOverlayTemplatePart =
+		templatePart?.area === NAVIGATION_OVERLAY_TEMPLATE_PART_AREA;
 
 	// Force overlayMenu to 'never' if within an overlay template part
 	// to prevents overlays within overlays.
