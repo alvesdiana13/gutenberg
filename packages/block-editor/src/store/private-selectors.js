@@ -738,6 +738,43 @@ export const isBlockHidden = ( state, clientId ) => {
 	return false;
 };
 
+export const isBlockHiddenEverywhere = ( state, clientId ) => {
+	const blockName = getBlockName( state, clientId );
+	if ( ! hasBlockSupport( blockName, 'visibility', true ) ) {
+		return false;
+	}
+	const attributes = state.blocks.attributes.get( clientId );
+	const blockVisibility = attributes?.metadata?.blockVisibility;
+
+	if ( blockVisibility === false ) {
+		return true;
+	}
+	return false;
+};
+
+export const isBlockHiddenAtViewport = ( state, clientId, viewport ) => {
+	const attributes = getBlockAttributes( state, clientId );
+	const blockVisibility = attributes?.metadata?.blockVisibility;
+	if ( blockVisibility === false ) {
+		return true;
+	}
+	if (
+		typeof blockVisibility === 'object' &&
+		blockVisibility !== null &&
+		typeof viewport === 'string'
+	) {
+		return blockVisibility?.[ viewport.toLowerCase() ] === false;
+	}
+	return false;
+};
+
+export const isBlockParentHiddenAtViewport = ( state, clientId, viewport ) => {
+	const parents = getBlockParents( state, clientId );
+	return parents.some( ( parentId ) =>
+		isBlockHiddenAtViewport( state, parentId, viewport )
+	);
+};
+
 /**
  * Returns true if there is a spotlighted block.
  *
