@@ -29,8 +29,8 @@ function findOptimalFontSize( textElement, applyFontSize ) {
 		parentElement &&
 		window?.getComputedStyle( parentElement )?.display === 'flex'
 	) {
-			referenceElement = parentElement;
-		}
+		referenceElement = parentElement;
+	}
 
 	while ( minSize <= maxSize ) {
 		const midSize = Math.floor( ( minSize + maxSize ) / 2 );
