@@ -54,6 +54,9 @@ import AriaReferencedText from './aria-referenced-text';
 import { unlock } from '../../lock-unlock';
 import usePasteStyles from '../use-paste-styles';
 import { cleanEmptyObject } from '../../hooks/utils';
+import { useBlockVisibility } from '../block-visibility';
+import { deviceTypeKey } from '../../store/private-keys';
+import { BLOCK_VISIBILITY_VIEWPORTS } from '../block-visibility/constants';
 
 function ListViewBlock( {
 	block: { clientId },
@@ -122,26 +125,31 @@ function ListViewBlock( {
 
 	const pasteStyles = usePasteStyles();
 
-	const { block, blockName, allowRightClickOverrides, isBlockHidden } =
+	const { block, blockName, allowRightClickOverrides, selectedDeviceType } =
 		useSelect(
 			( select ) => {
-				const {
-					isBlockHidden: _isBlockHidden,
-					getBlock,
-					getBlockName,
-					getSettings,
-				} = unlock( select( blockEditorStore ) );
+				const { getBlock, getBlockName, getSettings } = unlock(
+					select( blockEditorStore )
+				);
 
 				return {
 					block: getBlock( clientId ),
 					blockName: getBlockName( clientId ),
 					allowRightClickOverrides:
 						getSettings().allowRightClickOverrides,
-					isBlockHidden: _isBlockHidden( clientId ),
+					selectedDeviceType:
+						getSettings()?.[ deviceTypeKey ]?.toLowerCase() ||
+						BLOCK_VISIBILITY_VIEWPORTS.desktop.value,
 				};
 			},
 			[ clientId ]
 		);
+
+	// Use hook to get current viewport and if block is currently hidden (accurate viewport detection)
+	const { isBlockCurrentlyHidden } = useBlockVisibility( {
+		blockVisibility: block?.attributes?.metadata?.blockVisibility,
+		deviceType: selectedDeviceType,
+	} );
 
 	const showBlockActions =
 		// When a block hides its toolbar it also hides the block settings menu,
@@ -525,7 +533,7 @@ function ListViewBlock( {
 		isLocked
 	);
 
-	const blockVisibilityDescription = isBlockHidden
+	const blockVisibilityDescription = isBlockCurrentlyHidden
 		? __( 'Block is hidden.' )
 		: null;
 
