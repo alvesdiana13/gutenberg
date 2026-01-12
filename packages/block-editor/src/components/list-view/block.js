@@ -125,11 +125,12 @@ function ListViewBlock( {
 	const { block, blockName, allowRightClickOverrides, isBlockHidden } =
 		useSelect(
 			( select ) => {
-				const { getBlock, getBlockName, getSettings } =
-					select( blockEditorStore );
-				const { isBlockHidden: _isBlockHidden } = unlock(
-					select( blockEditorStore )
-				);
+				const {
+					isBlockHidden: _isBlockHidden,
+					getBlock,
+					getBlockName,
+					getSettings,
+				} = unlock( select( blockEditorStore ) );
 
 				return {
 					block: getBlock( clientId ),
